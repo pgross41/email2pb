@@ -32,6 +32,14 @@ logger.addHandler(handler)
 logger.setLevel(args.log_level)
 logger.debug(args)
 
+# Log exceptions
+def handle_exception(exc_type, exc_value, exc_traceback):
+    if issubclass(exc_type, KeyboardInterrupt):
+        sys.__excepthook__(exc_type, exc_value, exc_traceback)
+        return
+    logger.critical("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
+sys.excepthook = handle_exception    
+
 # Initialize Pushbullet client
 pb = Pushbullet(args.key)
 

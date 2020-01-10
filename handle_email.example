@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# Write stdin to file
+input_buffer="/var/spool/postfix/email2pb/input_buffer"
+cat > "$input_buffer"
+
+# Forward the message to gmail
+/usr/bin/python /var/spool/postfix/email2pb/fwdmsg.py\
+ --username "bleepblopdotmom@gmail.com"\
+ --password "hunter2"\
+ --from_addr "bleepblopdotmom@gmail.com"\
+ --to_addr "bleepblopdotmom@gmail.com"\
+ "$input_buffer"
+
+# Send notification if it's for channel 2
+! grep -q "Event:Motion detect in video channel 2" "$input_buffer" && exit
+/usr/bin/python /var/spool/postfix/email2pb/email2pb.py\
+ --key 0123456789abcdefjhijklmnopqrstuvwxyz\
+ --log_level 10\
+ --log_file "/var/spool/postfix/email2pb/email2pb.log"\
+ "$input_buffer"
