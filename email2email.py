@@ -2,6 +2,12 @@ import argparse
 import smtplib
 import sys
 
+####################################################################################################
+#
+# Forward a raw email via SMTP
+#
+####################################################################################################
+
 # Read arguments
 parser = argparse.ArgumentParser(description='Forward messages via SMTP')
 parser.add_argument(

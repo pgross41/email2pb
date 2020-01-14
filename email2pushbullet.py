@@ -11,6 +11,12 @@ from datetime import datetime
 from logging.handlers import RotatingFileHandler
 from pushbullet import Pushbullet
 
+####################################################################################################
+#
+# Parse a raw email and send it to pushbullet
+#
+####################################################################################################
+
 # Read arguments
 parser = argparse.ArgumentParser(description='Send PushBullet PUSH based on email message')
 parser.add_argument(
