@@ -1,9 +1,6 @@
 import argparse
-import logging
 import smtplib
 import sys
-
-from logging.handlers import RotatingFileHandler
 
 # Read arguments
 parser = argparse.ArgumentParser(description='Forward messages via SMTP')
@@ -30,5 +27,4 @@ server = smtplib.SMTP(args.host, args.port)
 server.starttls()
 server.login(args.username, args.password)
 server.sendmail(args.from_addr, args.to_addr, stdin_data)
-logger.info("Sent")
 server.quit()
