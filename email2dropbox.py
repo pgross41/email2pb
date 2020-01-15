@@ -29,7 +29,7 @@ parser.add_argument('--access_token', required=True)
 args = parser.parse_args() 
 
 # Configure logging
-logger = get_logger(logging.ERROR, "email2drobox.log")
+logger = get_logger(logging.ERROR, "email2dropbox.log")
 logger.debug(args)
 
 # Log exceptions
