@@ -8,8 +8,9 @@ import re
 import sys
 
 from datetime import datetime
-from logging.handlers import RotatingFileHandler
 from pushbullet import Pushbullet
+from shared import get_logger, init_exception_handler
+
 
 ####################################################################################################
 #
@@ -27,24 +28,15 @@ parser.add_argument(
     help='MIME-encoded email file(if empty, stdin will be used)')
 parser.add_argument('--key', help='API key for PushBullet', required=True)
 parser.add_argument('--log_level', default='40', help='10=debug 20-info 30=warning 40=error', type=int)
-parser.add_argument('--log_file', default='email2pb.log', help='Log file location', type=str)
+parser.add_argument('--log_file', default='email2pushbullet.log', help='Log file location', type=str)
 args = parser.parse_args()
 
 # Configure logging
-logger = logging.getLogger(__name__)
-handler = RotatingFileHandler(args.log_file, mode='a', maxBytes=1024*1024, backupCount=1)
-handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
-logger.addHandler(handler) 
-logger.setLevel(args.log_level)
+logger = get_logger(args.log_level, args.log_file)
 logger.debug(args)
 
 # Log exceptions
-def handle_exception(exc_type, exc_value, exc_traceback):
-    if issubclass(exc_type, KeyboardInterrupt):
-        sys.__excepthook__(exc_type, exc_value, exc_traceback)
-        return
-    logger.critical("Uncaught exception", exc_info=(exc_type, exc_value, exc_traceback))
-sys.excepthook = handle_exception    
+init_exception_handler(logger)    
 
 # Initialize Pushbullet client
 pb = Pushbullet(args.key)

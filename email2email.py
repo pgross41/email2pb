@@ -1,6 +1,10 @@
 import argparse
+import logging
 import smtplib
 import sys
+
+from shared import get_logger, init_exception_handler
+
 
 ####################################################################################################
 #
@@ -24,6 +28,13 @@ parser.add_argument('--host', default='smtp.gmail.com')
 parser.add_argument('--port', default='587', type=int)
 args = parser.parse_args() 
 
+# Configure logging
+logger = get_logger(logging.ERROR, "email2email.log")
+logger.debug(args)
+
+# Log exceptions
+init_exception_handler(logger)   
+
 # Read infile (is stdin if no arg)
 stdin_data = args.infile.read()
 args.infile.close()
@@ -34,3 +45,4 @@ server.starttls()
 server.login(args.username, args.password)
 server.sendmail(args.from_addr, args.to_addr, stdin_data)
 server.quit()
+logger.debug("Sent")
