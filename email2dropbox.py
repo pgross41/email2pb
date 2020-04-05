@@ -26,7 +26,7 @@ parser.add_argument(
     default=sys.stdin,
     help='MIME-encoded email file(if empty, stdin will be used)')
 parser.add_argument('--access_token', required=True)
-parser.add_argument('--log_level', default='40', help='10=debug 20-info 30=warning 40=error', type=int)
+parser.add_argument('--log_level', default='40', help='10=debug 20=info 30=warning 40=error', type=int)
 parser.add_argument('--log_file', default='email2dropbox.log', help='Log file location', type=str)
 args = parser.parse_args() 
 
