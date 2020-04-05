@@ -1,5 +1,4 @@
 import argparse
-import dropbox
 import email
 import logging
 import io
@@ -12,22 +11,22 @@ from shared import get_logger, init_exception_handler
 
 ####################################################################################################
 #
-# Parse image from a raw email and upload it to dropbox
+# Parse image from a raw email and save it to disk
 # This is super specific to uploading the image from dvr163 emails
 #
 ####################################################################################################
 
 # Read arguments
-parser = argparse.ArgumentParser(description='Forward messages via SMTP')
+parser = argparse.ArgumentParser(description='Save images from email')
 parser.add_argument(
     'infile',
     nargs='?',
     type=argparse.FileType('r'),
     default=sys.stdin,
     help='MIME-encoded email file(if empty, stdin will be used)')
-parser.add_argument('--access_token', required=True)
+parser.add_argument('--out_directory', required=True)
 parser.add_argument('--log_level', default='40', help='10=debug 20-info 30=warning 40=error', type=int)
-parser.add_argument('--log_file', default='email2dropbox.log', help='Log file location', type=str)
+parser.add_argument('--log_file', default='email2file.log', help='Log file location', type=str)
 args = parser.parse_args() 
 
 # Configure logging
@@ -36,9 +35,6 @@ logger.debug(args)
 
 # Log exceptions
 init_exception_handler(logger)
-
-# Initialize Dropbox client
-dbx = dropbox.Dropbox(args.access_token)
 
 # Read infile (is stdin if no arg) 
 stdin_data = args.infile.read()
@@ -60,8 +56,11 @@ image_part = msg.get_payload(1).get_payload()
 file_name = timestamp + '.jpg'
 file = io.BytesIO(image_part.decode('base64')).read()
 
-# Upload
-logger.debug('Uploading ' + file_name)
-file_data = dbx.files_upload(file, '/ch' + channel_number + '/' + file_name, mute=True)
+# Save
+out_path = args.out_directory + '/snapshot_cam_' + channel_number + '.jpg'
+logger.debug('Saving ' + out_path)
+out_file = open(out_path, "w")
+out_file.write(file)
+out_file.close()
 
-logger.info('Successfully uploaded ' + file_name)
+logger.info('Saved ' + file_name)
