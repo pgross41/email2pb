@@ -58,16 +58,18 @@ text_parts = html_text.split("; ")
 logger.debug('Found HTML text: ' + html_text)
 channel_number = text_parts[0][-1:]
 message = text_parts[0][6:]
-timestamp = text_parts[1][5:]
-timestamp_formatted = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S').strftime("%a %b %d, %I:%M:%S %p")
+file_name = re.sub(r' ', '_', re.sub(r'[-:]', '', text_parts[1][5:]))
+file_name_formatted = datetime.strptime(text_parts[1][5:], '%Y-%m-%d %H:%M:%S').strftime("%a %b %d, %I:%M:%S %p")
+timestamp = datetime.now().strftime("%a %b %d, %I:%M:%S %p")
 
 # Send
 logger.debug('Sending POST request')
 
 data = {
     "channel_number": channel_number,
+    "file_name": file_name,
     "message": message,
-    "timestamp": timestamp_formatted,
+    "timestamp": timestamp,
 }
 headers = {
     "Authorization": args.auth_header,
