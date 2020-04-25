@@ -31,8 +31,8 @@ parser.add_argument(
     type=argparse.FileType('r'),
     default=sys.stdin,
     help='MIME-encoded email file(if empty, stdin will be used)')
-parser.add_argument('--access_token', required=True)
 parser.add_argument('--url', required=True, help='the endpoint of the home assistant API to POST to')
+parser.add_argument('--auth_header')
 parser.add_argument('--log_level', default='40', help='10=debug 20=info 30=warning 40=error', type=int)
 parser.add_argument('--log_file', default='email2http.log', help='Log file location', type=str)
 args = parser.parse_args()
@@ -70,7 +70,7 @@ data = {
     "timestamp": timestamp_formatted,
 }
 headers = {
-    "Authorization": "Bearer " + args.access_token,
+    "Authorization": args.auth_header,
     "Content-Type": "application/json",
 }
 response = requests.post(args.url, data=json.dumps(data), headers=headers)
