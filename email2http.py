@@ -17,7 +17,7 @@ from shared import get_logger, init_exception_handler
 #
 # Parse a dvr163 email and POST the info to an HTTP endpoint
 # Note: this only sends the metadata (channel number, timestamp, etc.)
-# 
+#
 # To use with Home Assistant:
 #   Use email2file to write the file to disk and configure home assistant to use that file
 #
@@ -34,8 +34,8 @@ parser.add_argument(
 parser.add_argument('--access_token', required=True)
 parser.add_argument('--url', required=True, help='the endpoint of the home assistant API to POST to')
 parser.add_argument('--log_level', default='40', help='10=debug 20=info 30=warning 40=error', type=int)
-parser.add_argument('--log_file', default='email2dropbox.log', help='Log file location', type=str)
-args = parser.parse_args() 
+parser.add_argument('--log_file', default='email2http.log', help='Log file location', type=str)
+args = parser.parse_args()
 
 # Configure logging
 logger = get_logger(args.log_level, args.log_file)
@@ -44,7 +44,7 @@ logger.debug(args)
 # Log exceptions
 init_exception_handler(logger)
 
-# Read infile (is stdin if no arg) 
+# Read infile (is stdin if no arg)
 stdin_data = args.infile.read()
 args.infile.close()
 logger.debug('in:\n' + stdin_data)
@@ -67,7 +67,7 @@ logger.debug('Sending POST request')
 data = {
     "channel_number": channel_number,
     "message": message,
-    "timestamp": timestamp_formatted, 
+    "timestamp": timestamp_formatted,
 }
 headers = {
     "Authorization": "Bearer " + args.access_token,
