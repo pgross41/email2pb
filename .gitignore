@@ -1,2 +1,3 @@
 .vscode/*
 /email2*.log*
+*.pyc

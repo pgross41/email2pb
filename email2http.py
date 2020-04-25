@@ -1,9 +1,12 @@
 import argparse
+import datetime
 import dropbox
 import email
+import json
 import logging
 import io
 import re
+import requests
 import sys
 
 from datetime import datetime
@@ -12,13 +15,16 @@ from shared import get_logger, init_exception_handler
 
 ####################################################################################################
 #
-# Parse image from a raw email and upload it to dropbox
-# This is super specific to uploading the image from dvr163 emails
+# Parse a dvr163 email and POST the info to an HTTP endpoint
+# Note: this only sends the metadata (channel number, timestamp, etc.)
+# 
+# To use with Home Assistant:
+#   Use email2file to write the file to disk and configure home assistant to use that file
 #
 ####################################################################################################
 
 # Read arguments
-parser = argparse.ArgumentParser(description='Upload dvr163 images to Dropbox')
+parser = argparse.ArgumentParser(description='Send dvr163 messages to Home Asistant')
 parser.add_argument(
     'infile',
     nargs='?',
@@ -26,6 +32,7 @@ parser.add_argument(
     default=sys.stdin,
     help='MIME-encoded email file(if empty, stdin will be used)')
 parser.add_argument('--access_token', required=True)
+parser.add_argument('--url', required=True, help='the endpoint of the home assistant API to POST to')
 parser.add_argument('--log_level', default='40', help='10=debug 20=info 30=warning 40=error', type=int)
 parser.add_argument('--log_file', default='email2dropbox.log', help='Log file location', type=str)
 args = parser.parse_args() 
@@ -36,9 +43,6 @@ logger.debug(args)
 
 # Log exceptions
 init_exception_handler(logger)
-
-# Initialize Dropbox client
-dbx = dropbox.Dropbox(args.access_token)
 
 # Read infile (is stdin if no arg) 
 stdin_data = args.infile.read()
@@ -53,15 +57,22 @@ html_text = re.sub(r'(?s)<.*?>', ' ', clean_html).strip() # Get text content
 text_parts = html_text.split("; ")
 logger.debug('Found HTML text: ' + html_text)
 channel_number = text_parts[0][-1:]
-timestamp = re.sub(r' ', '_', re.sub(r'[-:]', '', text_parts[1][5:]))
+message = text_parts[0][6:]
+timestamp = text_parts[1][5:]
+timestamp_formatted = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S').strftime("%a %b %d, %I:%M:%S %p")
 
-# Read the image
-image_part = msg.get_payload(1).get_payload()
-file_name = timestamp + '.jpg'
-file = io.BytesIO(image_part.decode('base64')).read()
+# Send
+logger.debug('Sending POST request')
 
-# Upload
-logger.debug('Uploading ' + file_name)
-file_data = dbx.files_upload(file, '/ch' + channel_number + '/' + file_name, mute=True)
+data = {
+    "channel_number": channel_number,
+    "message": message,
+    "timestamp": timestamp_formatted, 
+}
+headers = {
+    "Authorization": "Bearer " + args.access_token,
+    "Content-Type": "application/json",
+}
+response = requests.post(args.url, data=json.dumps(data), headers=headers)
 
-logger.info('Successfully uploaded ' + file_name)
+logger.info('Success')
