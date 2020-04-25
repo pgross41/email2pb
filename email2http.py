@@ -34,7 +34,7 @@ parser.add_argument(
 parser.add_argument('--access_token', required=True)
 parser.add_argument('--url', required=True, help='the endpoint of the home assistant API to POST to')
 parser.add_argument('--log_level', default='40', help='10=debug 20=info 30=warning 40=error', type=int)
-parser.add_argument('--log_file', default='email2dropbox.log', help='Log file location', type=str)
+parser.add_argument('--log_file', default='email2http.log', help='Log file location', type=str)
 args = parser.parse_args() 
 
 # Configure logging
