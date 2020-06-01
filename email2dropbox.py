@@ -53,11 +53,12 @@ html_text = re.sub(r'(?s)<.*?>', ' ', clean_html).strip() # Get text content
 text_parts = html_text.split("; ")
 logger.debug('Found HTML text: ' + html_text)
 channel_number = text_parts[0][-1:]
-timestamp = re.sub(r' ', '_', re.sub(r'[-:]', '', text_parts[1][5:]))
+date = text_parts[1][5:15]
+time = re.sub(r'[-:]', '.', text_parts[1][16:])
 
 # Read the image
 image_part = msg.get_payload(1).get_payload()
-file_name = timestamp + '.jpg'
+file_name = date + '/' + time + '.jpg'
 file = io.BytesIO(image_part.decode('base64')).read()
 
 # Upload

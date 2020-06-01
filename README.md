@@ -26,7 +26,46 @@ Let's imagine that we want to redirect all emails sent to push@example.com as a 
 
 ### Step 0: Setup and configure postfix for domain example.com and other prerequisites
 
-[This tutorial](https://www.stewright.me/2012/09/tutorial-install-postfix-to-allow-outgoing-email-on-raspberry-pi/) is super short but a good place to get your feet wet if you are coming from nothing. 
+*Install postfix*
+1. Get updates
+`sudo apt-get update`
+1. Get postfix
+`sudo apt-get install postfix`
+1. Choose `internet site` from the list
+
+*Install dovecot (if emails use auth)*
+1. Get updates
+```
+sudo apt-get update
+```
+1. Get dovecot
+```
+sudo apt-get install dovecot-common dovecot-imapd
+```
+1. Tell Postfix to use Dovecot for SASL authentication. Open `/etc/postfix/main.cf` and add these lines:
+```
+smtpd_sasl_type = dovecot
+smtpd_sasl_path = private/auth
+smtpd_sasl_auth_enable = yes
+```
+1. Enable plaintext logins. Open `/etc/dovecot/conf.d/10-auth.conf` and add these lines: 
+```
+disable_plaintext_auth = no
+auth_mechanisms = plain login
+```
+1. Add user
+```
+sudo adduser testmail
+```
+
+*Restart services*
+```
+sudo service postfix restart
+sudo service dovecot restart
+```
+
+Sources: 
+[This tutorial](https://www.stewright.me/2012/09/tutorial-install-postfix-to-allow-outgoing-email-on-raspberry-pi/) is super short but a good place to get started if you are coming from nothing. 
 
 [This tutorial](https://samhobbs.co.uk/2013/12/raspberry-pi-email-server-part-1-postfix) goes more in-depth. 
 
