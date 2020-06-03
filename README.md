@@ -14,7 +14,7 @@ Forward email input to a new email address via SMTP.
 
 **Email to Dropbox (email2dropbox.py)**
 
-Parses the image out of DVR163 emails and uploads it to Dropbox
+Parses the image out of DVR163 emails and uploads it to Dropbox. Requires the dropbox python package. 
 
 **Email to File (email2file.py)**
 
@@ -78,10 +78,10 @@ sudo service postfix restart
 sudo service dovecot restart
 ```
 
-Sources: 
-[This tutorial](https://www.stewright.me/2012/09/tutorial-install-postfix-to-allow-outgoing-email-on-raspberry-pi/) is super short but a good place to get started if you are coming from nothing. 
+**Sources**
+- https://www.stewright.me/2012/09/tutorial-install-postfix-to-allow-outgoing-email-on-raspberry-pi/
+- https://samhobbs.co.uk/2013/12/raspberry-pi-email-server-part-1-postfix
 
-[This tutorial](https://samhobbs.co.uk/2013/12/raspberry-pi-email-server-part-1-postfix) goes more in-depth. 
 
 ### Step 1: Create shell script
 
