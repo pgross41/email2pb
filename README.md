@@ -38,27 +38,27 @@ Let's imagine that we want to redirect all emails sent to push@example.com as a 
 ```
 sudo apt-get update
 ```
-1. Get dovecot
+2. Get dovecot
 ```
 sudo apt-get install dovecot-common dovecot-imapd
 ```
-1. Tell Postfix to use Dovecot for SASL authentication. Open `/etc/postfix/main.cf` and add these lines:
+3. Tell Postfix to use Dovecot for SASL authentication. Open `/etc/postfix/main.cf` and add these lines:
 ```
 smtpd_sasl_type = dovecot
 smtpd_sasl_path = private/auth
 smtpd_sasl_auth_enable = yes
 ```
-1. Enable plaintext logins. Open `/etc/dovecot/conf.d/10-auth.conf` and add these lines: 
+4. Enable plaintext logins. Open `/etc/dovecot/conf.d/10-auth.conf` and add these lines: 
 ```
 disable_plaintext_auth = no
 auth_mechanisms = plain login
 ```
-1. Add user
+5. Add user
 ```
 sudo adduser testmail
 ```
 
-*Restart services*
+**Restart services**
 ```
 sudo service postfix restart
 sudo service dovecot restart
