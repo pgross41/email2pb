@@ -26,14 +26,18 @@ Let's imagine that we want to redirect all emails sent to push@example.com as a 
 
 ### Step 0: Setup and configure postfix for domain example.com and other prerequisites
 
-*Install postfix*
+**Install postfix**
 1. Get updates
-`sudo apt-get update`
-1. Get postfix
-`sudo apt-get install postfix`
-1. Choose `internet site` from the list
+```
+sudo apt-get update
+```
+2. Get postfix
+```
+sudo apt-get install postfix
+```
+3. Choose `internet site` from the list
 
-*Install dovecot (if emails use auth)*
+**Install dovecot (if emails use auth)**
 1. Get updates
 ```
 sudo apt-get update
@@ -48,12 +52,22 @@ smtpd_sasl_type = dovecot
 smtpd_sasl_path = private/auth
 smtpd_sasl_auth_enable = yes
 ```
-4. Enable plaintext logins. Open `/etc/dovecot/conf.d/10-auth.conf` and add these lines: 
+4. Listen for SASL authentication requests from Postfix. Open `/etc/dovecot/conf.d/10-master.conf` and replace the `unix_lister` block in `service auth` so that it looks like this: 
+```
+service auth {
+        unix_listener /var/spool/postfix/private/auth {
+                mode = 0660
+                user = postfix
+                group = postfix
+        }
+}
+```
+5. Enable plaintext logins. Open `/etc/dovecot/conf.d/10-auth.conf` and add these lines: 
 ```
 disable_plaintext_auth = no
 auth_mechanisms = plain login
 ```
-5. Add user
+6. Add user
 ```
 sudo adduser testmail
 ```
